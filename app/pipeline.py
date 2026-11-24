@@ -4,8 +4,9 @@ from app.capture.scan import scan
 from app.chainage.interpolate import restore
 from app.coverage.balance import balance
 from app.defects.cluster import consolidate
+from app.ledger.handover import handover
 
-STAGES = ('capture', 'anchors', 'chainage', 'defects', 'coverage')
+STAGES = ('capture', 'anchors', 'chainage', 'defects', 'coverage', 'ledger')
 
 
 def inspect(raw, until='coverage', *, survey=None):
@@ -22,7 +23,11 @@ def inspect(raw, until='coverage', *, survey=None):
     results['chainage'] = located
     if until == 'chainage':
         return results
-    if until != 'coverage':
-        return dict(results, defects=consolidate(located['projected']))
-    return dict(results, defects=consolidate(located['projected']),
-                coverage=balance(plan, located['segments'], located['gaps']))
+    results['defects'] = consolidate(located['projected'])
+    if until == 'defects':
+        return results
+    results['coverage'] = balance(plan, located['segments'], located['gaps'])
+    if until == 'coverage':
+        return results
+    results['ledger'] = handover(captured, anchors, located, results['coverage'])
+    return results

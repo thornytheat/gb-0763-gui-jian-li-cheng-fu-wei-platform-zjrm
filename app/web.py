@@ -8,8 +8,8 @@ from app.pipeline import inspect
 
 pages = Blueprint('track_web', __name__)
 SECTIONS = {'coverage': '轨段覆盖对账', 'capture': '轨检报文采信', 'anchors': '基点匹配',
-            'chainage': '区间坐标复位', 'defects': '缺陷投影合并', 'runs': '批次留档复跑',
-            'issue': '巡检证据签发'}
+            'chainage': '区间坐标复位', 'defects': '缺陷投影合并', 'ledger': '交班处置台账',
+            'runs': '批次留档复跑', 'issue': '巡检证据签发'}
 
 
 @pages.get('/')

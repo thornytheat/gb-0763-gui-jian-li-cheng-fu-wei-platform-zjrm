@@ -37,6 +37,11 @@ def coverage():
     return stage('coverage')
 
 
+@api.route('/api/ledger', methods=['GET', 'POST'])
+def ledger():
+    return stage('ledger')
+
+
 @api.get('/api/runs')
 def history():
     return recent(current_app.track_archive)

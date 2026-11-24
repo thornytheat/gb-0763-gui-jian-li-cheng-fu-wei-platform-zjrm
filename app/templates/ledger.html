@@ -1,0 +1,26 @@
+{% set data=stages.ledger %}
+<div class="work-grid">
+  <section class="panel"><h3>主因派修 · {{ data.open_causes }} 项</h3>
+    {% for cause in data.causes %}
+    <details open><summary>{{ cause.label }} · {{ cause.owner }} · 行 {{ cause.sources|join('、') or '—' }}</summary>
+    <p><code>{{ cause.cause_id }}</code> · {{ cause.reason }}</p>
+    {% if cause.affects %}<p>牵连缺陷 {{ cause.affects|join('、') }} · 行 {{ cause.affect_lines|join('、') }}</p>{% endif %}
+    {% for gap in cause.gaps %}<p>缺证 {{ gap.chain }} {{ gap.start_mm }} → {{ gap.end_mm }} mm</p>{% endfor %}
+    </details>
+    {% else %}<p>全部报文处置闭环，没有待办主因。</p>{% endfor %}
+    {% for part in data.missing_parts %}
+    <p>缺证片段 {{ part.chain }} {{ part.start_mm }} → {{ part.end_mm }} mm · 主因
+      {% for id in part.causes %}<code>{{ id }}</code>{% endfor %}</p>
+    {% endfor %}
+  </section>
+  <section class="panel"><h3>逐行处置结论 · {{ data.rows }} 行</h3>
+    <div class="scroll"><table><thead><tr><th>行</th><th>报文</th><th>车次</th><th>处置结论</th><th>原因</th><th>主因</th></tr></thead><tbody>
+    {% for row in data.dispositions %}
+    <tr><td>{{ row.line }}</td><td>{{ row.event_id or '—' }}</td><td>{{ row.run or '—' }}</td>
+      <td>{{ row.label }}{% if row.detail %}<small>（{{ row.detail }}）</small>{% endif %}</td>
+      <td>{{ row.reason or '—' }}</td>
+      <td>{% if row.cause %}<code>{{ row.cause }}</code>{% else %}—{% endif %}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+  </section>
+</div>

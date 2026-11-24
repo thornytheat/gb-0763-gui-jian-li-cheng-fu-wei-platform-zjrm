@@ -20,12 +20,13 @@ def retrieve(archive, run_id):
 def replay(archive, raw):
     started = perf_counter()
     survey = survey_book()
-    evidence = inspect(raw, survey=survey)
+    evidence = inspect(raw, 'ledger', survey=survey)
     parameters = {'gap_s': GAP_SECONDS, 'late_s': LATE_SECONDS, 'merge_mm': MERGE_MM}
     identity = {'input_sha256': digest(raw), 'survey_sha256': digest(canonical(survey)),
                 'revision': REVISION, 'parameters': parameters}
     run_id = digest(canonical(identity))
     summary = {key: evidence['coverage'][key] for key in ('planned_mm', 'mapped_mm', 'missing_mm', 'overlap_mm')}
+    summary['open_causes'] = evidence['ledger']['open_causes']
     manifest = dict(identity, run_id=run_id, created_at=datetime.now(timezone.utc).isoformat(),
                     elapsed_ms=round((perf_counter() - started) * 1000), summary=summary)
     with archive.transaction() as db:
